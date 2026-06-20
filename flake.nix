@@ -16,7 +16,7 @@
 
   outputs =
     {
-      self,
+      # self,
       nixpkgs,
       crane,
       flake-utils,
@@ -135,17 +135,39 @@
           drv = my-crate;
         };
 
-        devShells.default = craneLib.devShell {
-          # Inherit inputs from checks.
-          checks = self.checks.${system};
+        devShells = {
+          cli = pkgs.mkShell {
+            packages = [ my-crate ];
+            shellHook = ''
+              export REPO_ROOT=$(git rev-parse --show-toplevel)
+              export PS1="Pomotimer $"
+              export PS1="\[\e[38;5;141m\]❯\[\e[0m\] "
+              clear
+            '';
+          };
 
-          # Additional dev-shell environment variables can be set directly
-          # MY_CUSTOM_DEVELOPMENT_VAR = "something else";
+          default = craneLib.devShell {
+            packages = (
+              with pkgs;
+              [
+                rustfmt
+                rust-analyzer
+                prettier
+              ]
+            );
 
-          # Extra inputs can be added here; cargo and rustc are provided by default.
-          packages = [
-            # pkgs.ripgrep
-          ];
+            shellHook = ''
+              export REPO_ROOT=$(git rev-parse --show-toplevel)
+              export PS1="\n\[\033[1;32m\][nix-shell:\w]\$\[\033[0m\] "
+              cargo() {
+              case "$1" in
+              build|run) echo "use nix to build/run instead" ;;
+              *) command cargo "$@" ;;
+              esac
+              }
+              export XDG_DATA_DIRS="$GSETTINGS_SCHEMAS_PATH" # Needed on Wayland to report the correct display scale
+            '';
+          };
         };
       }
     );
