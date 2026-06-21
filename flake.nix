@@ -133,16 +133,20 @@
           g = pkgs.stdenv.mkDerivation {
             name = "g";
             dontUnpack = true;
-            setupHook = pkgs.writeText "setup-hook.sh" ''
+
+            installPhase = ''
+              # 1. Create the target directory inside the package output
+              mkdir -p $out/etc/profile.d
+
+              # 2. Write the shell function straight into a script file
+              cat << 'EOF' > $out/etc/profile.d/g-command.sh
               g() {
               local OLD_PATH="$PATH"
-              PATH="${pkgs.lib.makeBinPath [ pkgs.zoxide ]}:$PATH"
+              export PATH="${pkgs.lib.makeBinPath [ pkgs.zoxide ]}:$PATH"
               eval "$(${my-crate}/bin/bookmarks go "$@")"
-              PATH="$OLD_PATH"
+              export PATH="$OLD_PATH"
               }
-            '';
-            installPhase = ''
-              mkdir -p $out
+              EOF
             '';
           };
           lb = pkgs.writeShellApplication {
