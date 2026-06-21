@@ -130,23 +130,10 @@
 
         packages = rec {
           bookmarks = my-crate;
-          g = pkgs.stdenv.mkDerivation {
+          g = pkgs.writeShellApplication {
             name = "g";
-            dontUnpack = true;
-
-            installPhase = ''
-              # 1. Create the target directory inside the package output
-              mkdir -p $out/etc/profile.d
-
-              # 2. Write the shell function straight into a script file
-              cat << 'EOF' > $out/etc/profile.d/g-command.sh
-              g() {
-              local OLD_PATH="$PATH"
-              export PATH="${pkgs.lib.makeBinPath [ pkgs.zoxide ]}:$PATH"
-              eval "$(${my-crate}/bin/bookmarks go "$@")"
-              export PATH="$OLD_PATH"
-              }
-              EOF
+            text = ''
+              ${my-crate}/bin/bookmarks go "$@" 
             '';
           };
           lb = pkgs.writeShellApplication {
