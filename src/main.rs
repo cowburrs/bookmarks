@@ -1,12 +1,10 @@
-// TODO: Add a 'did you mean' fuzzy find to g and fzf to list and err if save bookmark is
-// overwriting
 // TODO: Documentation for this bish
-// TODO: Clippy and nix flake check this bish
 use core::fmt;
 use std::{collections::HashMap, path::PathBuf};
 
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
+use colored::Colorize;
 use directories::{BaseDirs, ProjectDirs};
 
 mod cli;
@@ -15,6 +13,7 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{Error, Visitor},
 };
+use strsim::jaro_winkler;
 
 struct HomePath(PathBuf);
 
@@ -84,7 +83,15 @@ fn main() {
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
             let mut dirs: HashMap<String, HomePath> =
                 serde_json::from_str(&json).expect("Could not deserialize");
-            dirs.insert(args.name.clone(), HomePath(cwd.clone()));
+            match dirs.get(&args.name.clone()) {
+                None => {
+                    dirs.insert(args.name.clone(), HomePath(cwd.clone()));
+                }
+                _ => {
+                    eprintln!("bookmarks: key exists, first delete bookmark");
+                    return;
+                }
+            }
             let json = serde_json::to_string_pretty(&dirs).expect("Could not serialize");
             if let Some(thing) = config.parent() {
                 std::fs::create_dir_all(thing).expect("Could not create conf directory");
@@ -97,8 +104,9 @@ fn main() {
             let dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
             for (name, path) in dirs {
-                if name.contains(args.search.as_str()) {
-                    println!("{}: {}", name, path.display())
+                if jaro_winkler(name.as_str(), args.search.as_str()) > 0.8 || args.search.is_empty()
+                {
+                    println!("{:<10} -> {}", name, path.display())
                 }
             }
         }
@@ -107,7 +115,19 @@ fn main() {
             let mut dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
             if dirs.remove(&args.name).is_none() {
-                eprintln!("bookmarks: {} not found", args.name);
+                let sim = &dirs
+                    .iter()
+                    .filter(|(k, _)| jaro_winkler(k, &args.name) > 0.8)
+                    .map(|(k, _)| k.as_str().purple().to_string())
+                    .collect::<Vec<String>>();
+                let likely = match sim.as_slice() {
+                    [x @ .., xs] => format!("{}, or {}", x.join(", "), xs),
+                    _ => sim.join(", "),
+                };
+                eprintln!(
+                    "bookmarks: \"{}\" not found, did you mean: {}?",
+                    args.name, likely
+                );
                 return;
             }
             let json = serde_json::to_string_pretty(&dirs).unwrap();
