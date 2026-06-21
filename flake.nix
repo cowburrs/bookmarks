@@ -16,7 +16,7 @@
 
   outputs =
     {
-      # self,
+      self,
       nixpkgs,
       crane,
       flake-utils,
@@ -40,10 +40,6 @@
 
           buildInputs = [
             # Add additional build inputs here
-          ]
-          ++ lib.optionals pkgs.stdenv.isDarwin [
-            # Additional darwin specific inputs can be set here
-            pkgs.libiconv
           ];
 
           # Additional environment variables can be set directly
@@ -132,8 +128,50 @@
           );
         };
 
-        packages = {
-          default = my-crate;
+        packages = rec {
+          bookmarks = my-crate;
+          g = pkgs.stdenv.mkDerivation {
+            name = "g";
+            dontUnpack = true;
+            setupHook = pkgs.writeText "setup-hook.sh" ''
+              g() {
+              local OLD_PATH="$PATH"
+              PATH="${pkgs.lib.makeBinPath [ pkgs.zoxide ]}:$PATH"
+              eval "$(${my-crate}/bin/bookmarks go "$@")"
+              PATH="$OLD_PATH"
+              }
+            '';
+            installPhase = ''
+              mkdir -p $out
+            '';
+          };
+          lb = pkgs.writeShellApplication {
+            name = "lb";
+            text = ''
+              ${my-crate}/bin/bookmarks list "$@" 
+            '';
+          };
+          db = pkgs.writeShellApplication {
+            name = "db";
+            text = ''
+              ${my-crate}/bin/bookmarks delete "$@" 
+            '';
+          };
+          sb = pkgs.writeShellApplication {
+            name = "sb";
+            text = ''
+              ${my-crate}/bin/bookmarks save "$@" 
+            '';
+          };
+          default = pkgs.symlinkJoin {
+            name = "bmc";
+            paths = [
+              sb
+              db
+              lb
+              g
+            ];
+          };
         };
 
         apps.default = flake-utils.lib.mkApp {
@@ -142,7 +180,11 @@
 
         devShells = {
           cli = pkgs.mkShell {
-            packages = [ my-crate ];
+            # packages = builtins.attrValues self.packages.${system};
+            packages = [
+              self.packages.${system}.bookmarks
+              self.packages.${system}.default
+            ];
             shellHook = ''
               export REPO_ROOT=$(git rev-parse --show-toplevel)
               export PS1="Pomotimer $"

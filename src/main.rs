@@ -86,7 +86,7 @@ fn main() {
                 std::fs::create_dir_all(thing).expect("Could not create conf directory");
             }
             std::fs::write(&config, json).expect("Could not write to file");
-            println!("Saved {} as {}", args.name, cwd.display())
+            println!("bookmarks: Saved {} as {}", args.name, cwd.display())
         }
         Commands::List(args) => {
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
@@ -103,7 +103,7 @@ fn main() {
             let mut dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
             if dirs.remove(&args.name).is_none() {
-                println!("{} not found!", args.name);
+                eprintln!("bookmarks: {} not found", args.name);
                 return;
             }
             let json = serde_json::to_string_pretty(&dirs).unwrap();
@@ -111,21 +111,30 @@ fn main() {
                 std::fs::create_dir_all(thing).expect("Could not create conf directory");
             }
             std::fs::write(&config, json).expect("Could not write to file");
-            println!("Success: removed {}", args.name);
+            println!("bookmarks: removed {}", args.name);
         }
         Commands::Go(args) => {
-            let cwd = std::env::current_dir().unwrap();
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
             let dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
-            match dirs.get(&args.name.to_string()) {
+            let path = match dirs.get(&args.name.to_string()) {
                 None => {
-                    println!("{}", cwd.display());
+                    eprintln!("bookmarks: no match found, using zoxide instead");
+                    println!("cd \"$(zoxide query {})\"", args.name);
+                    return;
                 }
-                Some(thing) => {
-                    println!("{}", thing.display());
+                Some(thing) => thing,
+            };
+            let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
+            let home = base_dirs.home_dir().join("");
+            match path.strip_prefix("$HOME") {
+                Ok(thing) => {
+                    println!("cd {}{}", home.display(), thing.display());
                 }
-            }
+                Err(_) => {
+                    println!("cd {}", path.display());
+                }
+            };
         }
         Commands::Completions { shell } => {
             let mut cmd = cli::Args::command();
