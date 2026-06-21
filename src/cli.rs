@@ -1,4 +1,5 @@
 pub use clap::Parser;
+use clap_complete::Shell;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -13,11 +14,14 @@ pub enum Commands {
     List(List),
     Go(Go),
     Delete(Delete),
+    Completions {
+        #[arg(value_enum)]
+        shell: Shell,
+    },
 }
 
 #[derive(Parser, Debug)]
 pub struct Save {
-    #[arg(default_value = "")]
     pub name: String,
 }
 
@@ -29,12 +33,10 @@ pub struct List {
 
 #[derive(Parser, Debug)]
 pub struct Go {
-    #[arg(default_value = "default")]
     pub name: String,
 }
 
 #[derive(Parser, Debug)]
 pub struct Delete {
-    #[arg(default_value = "default")]
     pub name: String,
 }

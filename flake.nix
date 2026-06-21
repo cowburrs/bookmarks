@@ -60,6 +60,11 @@
           commonArgs
           // {
             inherit cargoArtifacts;
+            nativeBuildInputs = [ pkgs.installShellFiles ];
+            postInstall = ''
+              installShellCompletion --cmd bookmarks \
+              --bash <($out/bin/bookmarks completions bash)
+            '';
           }
         );
       in
@@ -78,7 +83,7 @@
             commonArgs
             // {
               inherit cargoArtifacts;
-              cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+              cargoClippyExtraArgs = "--all-targets -- --deny warnings --deny clippy::suspicious --deny clippy::style --deny clippy::complexity --deny clippy::perf";
             }
           );
 
