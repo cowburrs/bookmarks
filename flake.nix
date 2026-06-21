@@ -129,7 +129,7 @@
         };
 
         packages = rec {
-          bookmarks = my-crate;
+          default = my-crate;
           g = pkgs.writeShellApplication {
             name = "g";
             text = ''
@@ -154,7 +154,7 @@
               ${my-crate}/bin/bookmarks save "$@" 
             '';
           };
-          default = pkgs.symlinkJoin {
+          bookmarks = pkgs.symlinkJoin {
             name = "bmc";
             paths = [
               sb
