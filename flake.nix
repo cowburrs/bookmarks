@@ -64,7 +64,7 @@
           }
         );
       in
-      {
+      rec {
         checks = {
           # Build the crate as part of `nix flake check` for convenience
           inherit my-crate;
@@ -128,52 +128,30 @@
           );
         };
 
-        packages = rec {
-          default = my-crate;
-          g = pkgs.writeShellApplication {
-            name = "g";
-            text = ''
-              ${my-crate}/bin/bookmarks go "$@" 
-            '';
+        packages =
+          let
+            bm = my-crate;
+            default = pkgs.writeShellApplication {
+              runtimeInputs = [ bm ] ++ (with pkgs; [ zoxide ]);
+              name = "bm";
+              text = ''
+                ${my-crate}/bin/bookmarks "$@" 
+              '';
+            };
+          in
+          {
+            inherit default;
           };
-          lb = pkgs.writeShellApplication {
-            name = "lb";
-            text = ''
-              ${my-crate}/bin/bookmarks list "$@" 
-            '';
-          };
-          db = pkgs.writeShellApplication {
-            name = "db";
-            text = ''
-              ${my-crate}/bin/bookmarks delete "$@" 
-            '';
-          };
-          sb = pkgs.writeShellApplication {
-            name = "sb";
-            text = ''
-              ${my-crate}/bin/bookmarks save "$@" 
-            '';
-          };
-          bookmarks = pkgs.symlinkJoin {
-            name = "bmc";
-            paths = [
-              sb
-              db
-              lb
-              g
-            ];
-          };
-        };
 
         apps.default = flake-utils.lib.mkApp {
-          drv = my-crate;
+          # drv = my-crate;
+          drv = packages.default;
         };
 
         devShells = {
           cli = pkgs.mkShell {
             # packages = builtins.attrValues self.packages.${system};
             packages = [
-              self.packages.${system}.bookmarks
               self.packages.${system}.default
             ];
             shellHook = ''

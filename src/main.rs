@@ -119,8 +119,23 @@ fn main() {
                 serde_json::from_str(&json).expect("Could not deserialize");
             let path = match dirs.get(&args.name.to_string()) {
                 None => {
+                    let cwd = std::env::current_dir().expect("Couldn't get cwd");
+                    let output = std::process::Command::new("zoxide")
+                        .arg("query")
+                        .arg(args.name)
+                        .output()
+                        .expect("failed to execute process");
                     eprintln!("bookmarks: no match found, using zoxide instead");
-                    println!("cd \"$(zoxide query {})\"", args.name);
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    eprint!("{}", stderr.trim());
+                    if !stderr.trim().is_empty() {
+                        eprintln!()
+                    }
+                    let mut stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                    if stdout.is_empty() {
+                        stdout = cwd.to_string_lossy().to_string();
+                    }
+                    println!("cd {}", stdout);
                     return;
                 }
                 Some(thing) => thing,
