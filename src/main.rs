@@ -1,3 +1,7 @@
+// TODO: Add a 'did you mean' fuzzy find to g and fzf to list and err if save bookmark is
+// overwriting
+// TODO: Documentation for this bish
+// TODO: Clippy and nix flake check this bish
 use core::fmt;
 use std::{collections::HashMap, path::PathBuf};
 
