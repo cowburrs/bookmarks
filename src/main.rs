@@ -121,8 +121,9 @@ fn main() {
                     .map(|(k, _)| k.as_str().purple().to_string())
                     .collect::<Vec<String>>();
                 let likely = match sim.as_slice() {
+                    [] => "".to_string(),
+                    [x] => x.to_string(),
                     [x @ .., xs] => format!("{}, or {}", x.join(", "), xs),
-                    _ => sim.join(", "),
                 };
                 eprintln!(
                     "bookmarks: \"{}\" not found, did you mean: {}?",
