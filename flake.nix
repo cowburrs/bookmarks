@@ -169,6 +169,7 @@
                 rustfmt
                 rust-analyzer
                 prettier
+                mdbook
               ]
             );
 
