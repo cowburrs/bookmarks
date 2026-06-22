@@ -21,3 +21,4 @@ Bashmarks is a personal daily driver, and I wanted to extend it some more.
 
 <video src="https://raw.githubusercontent.com/cowburrs/bookmarks/main/assets/2026-06-23%2000-26-01.mp4" controls="controls" style="max-width: 100%;">
 </video>
+[[video]] https://raw.githubusercontent.com/cowburrs/bookmarks/main/assets/2026-06-23%2000-26-01.mp4
