@@ -29,13 +29,15 @@ pub struct Save {
 pub struct List {
     #[arg(default_value = "")]
     pub search: String,
-    #[arg(short = 's', long = "short")]
+    #[arg(short, long)]
     pub short: bool,
 }
 
 #[derive(Parser, Debug)]
 pub struct Go {
     pub name: String,
+    #[arg(short = 's', long = "short")]
+    pub raw: bool,
 }
 
 #[derive(Parser, Debug)]

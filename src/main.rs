@@ -175,12 +175,22 @@ fn main() {
             let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
             let home = base_dirs.home_dir().join("");
             match path.strip_prefix("$HOME") {
-                Ok(thing) => {
-                    println!("cd {}{}", home.display(), thing.display());
-                }
-                Err(_) => {
-                    println!("cd {}", path.display());
-                }
+                Ok(thing) => match args.raw {
+                    true => {
+                        println!("{}{}", home.display(), thing.display());
+                    }
+                    false => {
+                        println!("cd {}{}", home.display(), thing.display());
+                    }
+                },
+                Err(_) => match args.raw {
+                    true => {
+                        println!("{}", path.display());
+                    }
+                    false => {
+                        println!("cd {}", path.display());
+                    }
+                },
             };
         }
         Commands::Completions { shell } => {
