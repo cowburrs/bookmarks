@@ -106,7 +106,14 @@ fn main() {
             for (name, path) in dirs {
                 if jaro_winkler(name.as_str(), args.search.as_str()) > 0.8 || args.search.is_empty()
                 {
-                    println!("{:<10} -> {}", name, path.display())
+                    match args.short {
+                        true => {
+                            println!("{}", name)
+                        }
+                        false => {
+                            println!("{:<10} -> {}", name, path.display())
+                        }
+                    }
                 }
             }
         }

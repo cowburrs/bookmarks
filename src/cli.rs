@@ -29,6 +29,8 @@ pub struct Save {
 pub struct List {
     #[arg(default_value = "")]
     pub search: String,
+    #[arg(short = 's', long = "short")]
+    pub short: bool,
 }
 
 #[derive(Parser, Debug)]
