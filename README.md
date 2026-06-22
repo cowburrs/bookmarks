@@ -16,6 +16,6 @@ Bashmarks is a personal daily driver, and I wanted to extend it some more.
 
 # Starting/Documentation (IMPORTANT)
 
-Starting: https://cowburrs.github.io/bookmarks/installation
-Docs: https://cowburrs.github.io/bookmarks/
+- Starting: [https://cowburrs.github.io/bookmarks/installation](https://cowburrs.github.io/bookmarks/installation)
+- Docs: [https://cowburrs.github.io/bookmarks/](https://cowburrs.github.io/bookmarks/)
 
