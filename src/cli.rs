@@ -36,7 +36,7 @@ pub struct List {
 #[derive(Parser, Debug)]
 pub struct Go {
     pub name: String,
-    #[arg(short = 's', long = "short")]
+    #[arg(short, long)]
     pub raw: bool,
 }
 
