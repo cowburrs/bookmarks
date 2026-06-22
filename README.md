@@ -20,3 +20,4 @@ Bashmarks is a personal daily driver, and I wanted to extend it some more.
 - Docs: [https://cowburrs.github.io/bookmarks/](https://cowburrs.github.io/bookmarks/)
 
 <video src="assets/examplevideo.mp4" width="320" height="240" controls></video>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/doTYkaYZd_M" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
