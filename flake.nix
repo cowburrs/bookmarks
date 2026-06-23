@@ -44,6 +44,10 @@
 
           # Additional environment variables can be set directly
           # MY_CUSTOM_VAR = "some value";
+          # CARGO_PROFILE = "release";
+          # CARGO_PROFILE_RELEASE_LTO = "fat";
+          # CARGO_PROFILE_RELEASE_OPT_LEVEL = "3";
+          # Its not strictly necessary tbh
         };
 
         # Build *just* the cargo dependencies, so we can reuse
@@ -146,14 +150,13 @@
           in
           {
             inherit default;
+            inherit bm;
           };
 
         # apps.default = flake-utils.lib.mkApp {
         #   drv = packages.default;
         # };
-		  apps.default = packages.default;
-
-		  
+        apps.default = packages.default;
 
         devShells = {
           cli = pkgs.mkShell {
