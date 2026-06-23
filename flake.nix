@@ -170,6 +170,7 @@
                 rust-analyzer
                 prettier
                 mdbook
+                mdformat
               ]
             );
 
