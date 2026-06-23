@@ -131,22 +131,29 @@
         packages =
           let
             bm = my-crate;
-            default = pkgs.writeShellApplication {
-              runtimeInputs = [ bm ] ++ (with pkgs; [ zoxide ]);
-              name = "bm";
-              text = ''
-                ${my-crate}/bin/bookmarks "$@" 
-              '';
-            };
+            default =
+              (pkgs.writeShellApplication {
+                runtimeInputs = [ bm ] ++ (with pkgs; [ zoxide ]);
+                name = "bm";
+                text = ''
+                  ${my-crate}/bin/bookmarks "$@"
+                '';
+              }).overrideAttrs
+                (old: {
+                  pname = "bm";
+                  version = "0.1.0";
+                });
           in
           {
             inherit default;
           };
 
-        apps.default = flake-utils.lib.mkApp {
-          # drv = my-crate;
-          drv = packages.default;
-        };
+        # apps.default = flake-utils.lib.mkApp {
+        #   drv = packages.default;
+        # };
+		  apps.default = packages.default;
+
+		  
 
         devShells = {
           cli = pkgs.mkShell {
