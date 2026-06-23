@@ -2,7 +2,7 @@
 
 Add the following to your bashrc.
 
-```
+```bash
 g() {
 	eval "$(bm go "$@")"
 }
@@ -26,7 +26,7 @@ Use the native yazi package manager to add bookmarks
 Then add the keybind to your `keymap.toml` (The following example uses the TOML table
 json-like syntax)
 
-```
+```toml
 # { on = "<C-z>", run = "suspend", desc = "Suspend the process" },
 { on = "<C-z>", run = "plugin bookmarks", desc = "bashmarks jump" },
 ```
