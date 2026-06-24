@@ -141,23 +141,25 @@
             inherit bm;
             default = pkgs.stdenv.mkDerivation {
               name = "bm";
-              # src = null;
               dontUnpack = true;
               nativeBuildInputs = [
                 pkgs.installShellFiles
+                pkgs.makeWrapper
               ];
+
+              runtimeInputs = (with pkgs; [ zoxide ]);
 
               installPhase = ''
                 runHook preInstall
                 mkdir -p $out/bin
-                ln -s ${bm}/bin/bookmarks $out/bin/bm
+
+                makeWrapper ${bm}/bin/bookmarks $out/bin/bm \
+                --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.zoxide ]}
+
                 runHook postInstall
               '';
 
               postInstall = ''
-                # installShellCompletion --cmd bm \
-                # --bash <(${bm}/bin/bookmarks completions bash bm) 
-
                 mkdir -p $out/share/man
                 ln -s ${bm}/share/man/man1 $out/share/man/man1
 
