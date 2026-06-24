@@ -13,6 +13,7 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{Error, Visitor},
 };
+use serde_json::to_string;
 use strsim::jaro_winkler;
 
 struct HomePath(PathBuf);
@@ -146,6 +147,19 @@ fn main() {
             println!("bookmarks: removed {}", args.name);
         }
         Commands::Go(args) => {
+            let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
+            let home = base_dirs.home_dir();
+            match args.name.as_str() {
+                x if x == home.to_string_lossy() => {
+                    println!("cd {}", args.name);
+                    return;
+                }
+                ".." | "." => {
+                    println!("cd {}", args.name);
+                    return;
+                }
+                _ => {}
+            }
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
             let dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
@@ -172,8 +186,6 @@ fn main() {
                 }
                 Some(thing) => thing,
             };
-            let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
-            let home = base_dirs.home_dir().join("");
             match path.strip_prefix("$HOME") {
                 Ok(thing) => match args.raw {
                     true => {
