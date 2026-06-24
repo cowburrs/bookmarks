@@ -1,4 +1,5 @@
-# Getting started in bash
+# Quick Start
+## Getting started in bash
 
 Add the following to your bashrc.
 
@@ -17,7 +18,7 @@ Then you can use it like so:
 ╰─$
 ```
 
-# Adding this plugin to yazi
+## Adding this plugin to yazi
 
 Use the native yazi package manager to add bookmarks
 

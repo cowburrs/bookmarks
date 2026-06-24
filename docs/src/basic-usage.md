@@ -1,6 +1,7 @@
+# Commands
 There are only 4 basic commands
 
-# Go
+## Go
 
 This function returns a command, which assuming you have the gnu coreutil of cd
 you can run/eval
@@ -32,7 +33,10 @@ bookmarks: no match found, using zoxide instead
 ╰─$
 ```
 
-# Delete
+`~`, `.`, `..` will not be passed to zoxide. And unlike bashmarks, this command
+will not cd to any directory in the cwd.
+
+## Delete
 
 You can delete bookmarks using this syntax, if you misstype, this command will
 helpfully show you similar commands.
@@ -48,7 +52,7 @@ bookmarks: "yaz" not found, did you mean: yazi?
 Alternatively you can delete the entry in `.config/bookmarks/dirs`, this position
 will vary depending on your os of choice.
 
-# Save
+## Save
 
 You can save bookmarks using the cli
 
@@ -64,7 +68,7 @@ bookmarks: key exists, first delete bookmark
 Also alternatively you can add entries manually. This is not recommended as two entries
 with the same name may cause undefined behaviour.
 
-# List
+## List
 
 You can search the lists. Lists are filtered out based on string similarity,
 so you can misstype here.

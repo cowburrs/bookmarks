@@ -1,10 +1,11 @@
-# Prerequisites
+# Installation
+## Prerequisites
 
 - This is strictly a linux tool, this tool is untested
   - \*although the implemetation of the directory saving is OS agnostic
 - A shell is necessary, this is a cli tool
 
-# Nix
+## Nix
 
 Add the repository to your inputs in flake.nix
 
@@ -39,8 +40,10 @@ environment.systemPackages =
   ];
 ```
 
-# Other linux distributions
+## Other linux distributions
 
 See the release tab in github, all binaries are compiled using github actions.
-Meaning they're reasonably safe. (This binary is unwrapped without dependancies
-like zoxide because it bloats the binary around 1.5mb -> 30mb)
+Meaning they're reasonably safe.
+
+[TL Note]:  Autocompletions and Man pages and dependencies are not shipped.
+The nix download is heavily favoured over this manual approach
