@@ -157,29 +157,37 @@ fn main() {
                 }
                 _ => {}
             }
+            let home = base_dirs.home_dir().join("");
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
             let dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
+            let cwd = std::env::current_dir().expect("Couldn't get cwd");
             let path = match dirs.get(&args.name.to_string()) {
                 None => {
-                    let cwd = std::env::current_dir().expect("Couldn't get cwd");
+                    eprintln!("bookmarks: no match found, using zoxide instead");
                     let output = std::process::Command::new("zoxide")
                         .arg("query")
                         .arg(args.name)
-                        .output()
-                        .expect("failed to execute process");
-                    eprintln!("bookmarks: no match found, using zoxide instead");
-                    let stderr = String::from_utf8_lossy(&output.stderr);
-                    eprint!("{}", stderr.trim());
-                    if !stderr.trim().is_empty() {
-                        eprintln!()
+                        .output();
+                    match output {
+                        Err(_) => {
+                            eprintln!("bookmarks: zoxide not found.");
+                            &cwd
+                        }
+                        Ok(out) => {
+                            let stderr = String::from_utf8_lossy(&out.stderr);
+                            eprint!("{}", stderr.trim());
+                            if !stderr.trim().is_empty() {
+                                eprintln!()
+                            }
+                            let mut stdout =
+                                String::from_utf8_lossy(&out.stdout).trim().to_string();
+                            if stdout.is_empty() {
+                                stdout = cwd.to_string_lossy().to_string();
+                            }
+                            &PathBuf::from(stdout)
+                        }
                     }
-                    let mut stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                    if stdout.is_empty() {
-                        stdout = cwd.to_string_lossy().to_string();
-                    }
-                    println!("cd {}", stdout);
-                    return;
                 }
                 Some(thing) => thing,
             };
