@@ -62,13 +62,12 @@
             inherit cargoArtifacts;
             nativeBuildInputs = [ pkgs.installShellFiles ];
             postInstall = ''
-              installShellCompletion --cmd bookmarks \
-              --bash <($out/bin/bookmarks completions bash)
+              installManPage target/man/*.1
             '';
           }
         );
       in
-      rec {
+      {
         checks = {
           # Build the crate as part of `nix flake check` for convenience
           inherit my-crate;
@@ -135,28 +134,38 @@
         packages =
           let
             bm = my-crate;
-            default =
-              (pkgs.writeShellApplication {
-                runtimeInputs = [ bm ] ++ (with pkgs; [ zoxide ]);
-                name = "bm";
-                text = ''
-                  ${my-crate}/bin/bookmarks "$@"
-                '';
-              }).overrideAttrs
-                (old: {
-                  pname = "bm";
-                  version = "0.1.0";
-                });
           in
           {
-            inherit default;
             inherit bm;
+            default = pkgs.stdenv.mkDerivation {
+              name = "bm";
+              # src = null;
+              dontUnpack = true;
+              nativeBuildInputs = [
+                pkgs.installShellFiles
+              ];
+
+              installPhase = ''
+                runHook preInstall
+                mkdir -p $out/bin
+                ln -s ${bm}/bin/bookmarks $out/bin/bm
+                runHook postInstall
+              '';
+
+              postInstall = ''
+                installShellCompletion --cmd bm \
+                --bash <(${bm}/bin/bookmarks completions bash bm) 
+
+                mkdir -p $out/share/man
+                ln -s ${bm}/share/man/man1 $out/share/man/man1
+              '';
+            };
           };
 
         # apps.default = flake-utils.lib.mkApp {
         #   drv = packages.default;
         # };
-        apps.default = packages.default;
+        # apps.default = packages.default;
 
         devShells = {
           cli = pkgs.mkShell {

@@ -18,10 +18,14 @@ pub enum Commands {
     Go(Go),
     /// Delete a bookmark
     Delete(Delete),
-    /// shell completions (not implemented in nix)
+    /// print the shell completion
     Completions {
+        /// The shell, e.g bash zsh fish etc.
         #[arg(value_enum)]
         shell: Shell,
+        /// Binary name, this will get the auto completion
+        #[arg(default_value = "bookmarks")]
+        bin: String,
     },
 }
 

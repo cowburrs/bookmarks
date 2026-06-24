@@ -205,10 +205,9 @@ fn main() {
                 },
             };
         }
-        Commands::Completions { shell } => {
+        Commands::Completions { shell, bin } => {
             let mut cmd = cli::Args::command();
-            let name = cmd.get_name().to_string();
-            generate(shell, &mut cmd, name, &mut std::io::stdout());
+            generate(shell, &mut cmd, bin, &mut std::io::stdout());
         }
     };
 }
