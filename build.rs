@@ -2,6 +2,8 @@
 // It includes the same derive-based CLI definitions from src/cli.rs so that
 // the Command layout is a single source of truth.
 
+use clap_complete::Shell::Bash;
+use clap_complete::generate;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -20,19 +22,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Determine output directory: use target/man under the workspace for convenience.
     // Using OUT_DIR is also fine; target/man is easier to discover.
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR")?);
-    let out_dir = manifest_dir.join("target").join("man");
-    fs::create_dir_all(&out_dir)?;
+    let man_dir = manifest_dir.join("target").join("man");
+    fs::create_dir_all(&man_dir)?;
 
     // Build the clap::Command from the derive type.
-    let cmd = <cli::Args as clap::CommandFactory>::command()
+    let mut cmd = <cli::Args as clap::CommandFactory>::command()
         .name("bm")
         .bin_name("bm");
 
     // Generate a man page for the root and all subcommands recursively.
     // clap_mangen::generate_to will walk the subcommands if you pass the root Command.
-    clap_mangen::generate_to(cmd, &out_dir)?;
+    clap_mangen::generate_to(cmd.clone(), &man_dir)?;
 
-    println!("cargo:warning=Generated man pages to {}", out_dir.display());
+    println!("cargo:warning=Generated man pages to {}", man_dir.display());
+
+    let comp_dir = manifest_dir.join("target").join("completions");
+    std::fs::create_dir_all(&comp_dir)?;
+    let mut file = std::fs::File::create(comp_dir.join("bm.bash"))?;
+    generate(Bash, &mut cmd, "bm", &mut file);
 
     Ok(())
 }

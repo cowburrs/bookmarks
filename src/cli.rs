@@ -1,5 +1,4 @@
 pub use clap::Parser;
-use clap_complete::Shell;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -18,15 +17,6 @@ pub enum Commands {
     Go(Go),
     /// Delete a bookmark
     Delete(Delete),
-    /// print the shell completion
-    Completions {
-        /// The shell, e.g bash zsh fish etc.
-        #[arg(value_enum)]
-        shell: Shell,
-        /// Binary name, this will get the auto completion
-        #[arg(default_value = "bookmarks")]
-        bin: String,
-    },
 }
 
 #[derive(Parser, Debug)]
@@ -38,7 +28,7 @@ pub struct Save {
 #[derive(Parser, Debug)]
 pub struct List {
     #[arg(default_value = "")]
-    ///
+    /// The alias to search for (will find similar strings)
     pub search: String,
     #[arg(short, long)]
     /// This will shorten the syntax e.g

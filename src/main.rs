@@ -1,9 +1,7 @@
-// TODO: Documentation for this bish (yay)
 use core::fmt;
 use std::{collections::HashMap, path::PathBuf};
 
-use clap::{CommandFactory, Parser};
-use clap_complete::generate;
+use clap::Parser;
 use colored::Colorize;
 use directories::{BaseDirs, ProjectDirs};
 
@@ -13,7 +11,6 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
     de::{Error, Visitor},
 };
-use serde_json::to_string;
 use strsim::jaro_winkler;
 
 struct HomePath(PathBuf);
@@ -204,10 +201,6 @@ fn main() {
                     }
                 },
             };
-        }
-        Commands::Completions { shell, bin } => {
-            let mut cmd = cli::Args::command();
-            generate(shell, &mut cmd, bin, &mut std::io::stdout());
         }
     };
 }

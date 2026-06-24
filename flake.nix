@@ -63,6 +63,8 @@
             nativeBuildInputs = [ pkgs.installShellFiles ];
             postInstall = ''
               installManPage target/man/*.1
+              installShellCompletion --cmd bm \
+              --bash <(cat target/completions/bm.bash) 
             '';
           }
         );
@@ -153,11 +155,14 @@
               '';
 
               postInstall = ''
-                installShellCompletion --cmd bm \
-                --bash <(${bm}/bin/bookmarks completions bash bm) 
+                # installShellCompletion --cmd bm \
+                # --bash <(${bm}/bin/bookmarks completions bash bm) 
 
                 mkdir -p $out/share/man
                 ln -s ${bm}/share/man/man1 $out/share/man/man1
+
+                mkdir -p $out/share/bash-completion
+                ln -s ${bm}/share/bash-completion/completions $out/share/bash-completion/completions
               '';
             };
           };
