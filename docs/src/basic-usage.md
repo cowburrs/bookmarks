@@ -36,8 +36,8 @@ bookmarks: no match found, using zoxide instead
 `~`, `.`, `..` and other sensible defaults
 will not be passed to zoxide.
 
-Unlike bashmarks also, this command
-will not cd to any directory in the cwd.
+This function will check to see if a directory is available to cd into, and will cd into that directory
+before trying zoxide
 
 ## Delete
 
