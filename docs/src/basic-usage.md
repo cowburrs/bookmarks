@@ -1,4 +1,5 @@
 # Commands
+
 There are only 4 basic commands
 
 ## Go
@@ -37,7 +38,7 @@ bookmarks: no match found, using zoxide instead
 will not be passed to zoxide.
 
 This function will check to see if a directory is available to cd into, and will cd into that directory
-before trying zoxide
+before trying zoxide. It will not pass into zoxide if the text contains . or / at any point.
 
 ## Delete
 

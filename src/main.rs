@@ -158,7 +158,10 @@ fn main() {
                 match dirs.get(&args.name) {
                     Some(thing) => thing.clone(),
                     None => {
-                        if Path::new(&args.name).is_dir() {
+                        if Path::new(&args.name).is_dir()
+                            || args.name.contains(".")
+                            || args.name.contains("/")
+                        {
                             PathBuf::from(&args.name)
                         } else {
                             eprintln!("bookmarks: no match found, using zoxide instead");
