@@ -41,8 +41,28 @@ outputs =
 }@inputs:
 ```
 
-You can define the following in your modules (or if you inherit inputs you can
-add this to your configuration.nix)
+You can define the in build module
+
+```nix
+burrs = nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules = inputs.bookmarks.nixosModules.default
+};
+```
+
+Then in your `configuration.nix` you can simply enable the program.
+
+```nix
+{
+  ...
+}:
+{
+  programs.bookmarks.enable = true;
+}
+```
+
+You can also define it as a system package (You will need to add your
+own bash aliases.)
 
 ```nix
 environment.systemPackages =

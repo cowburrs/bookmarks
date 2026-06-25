@@ -2,11 +2,13 @@
 
 ## Nix
 
+Nix has extra support for yazi in nixpkgs.
+
 ### Yazi
 
 Optionally you can add the yazi plugin through nix. Heres my current
 configuration as a sample that might help you get started. This is my
-current configuration as of jun 25
+current configuration as of *jun 25 2025*
 
 Assuming you have bookmarks defined in your inputs.
 

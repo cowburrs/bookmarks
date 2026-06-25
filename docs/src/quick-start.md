@@ -2,7 +2,9 @@
 
 ## Getting started in bash
 
-Add the following to your bashrc.
+Add the following to your bashrc. (**nix:** If you have
+`programs.bookmarks.enable` in your `configuration.nix`
+you will automatically have this shell function.)
 
 ```bash
 g() {
@@ -19,6 +21,8 @@ Then you can use it like so:
 ╰─$
 ```
 
+*\*note that this function is exempt from shell completion*
+
 ## Adding this plugin to yazi
 
 ### Nix
@@ -34,7 +38,8 @@ Or alternatively use the native yazi package manager to add bookmarks
 
 ### Keybinding
 
-Then add the keybind to your `keymap.toml` (The following example uses the TOML table
+Then after you've added the plugin you can add the following
+keybind to your `keymap.toml` (The following example uses the TOML table
 json-like syntax)
 
 ```toml
