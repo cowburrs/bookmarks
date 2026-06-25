@@ -191,6 +191,43 @@
         # };
         # apps.default = packages.default;
 
+        nixosModules.default =
+          {
+            config,
+            lib,
+            pkgs,
+            ...
+          }:
+          let
+            inherit (lib.options) mkEnableOption mkOption;
+            inherit (lib.modules) mkIf;
+            inherit (lib.types) package;
+
+            cfg = config.programs.bookmarks;
+          in
+          {
+            options.programs.bookmarks = {
+              enable = mkEnableOption "bookmarks, blazingly fast bashmarks alternative";
+              package = mkOption {
+                type = package;
+                default = self.packages.${pkgs.system}.default;
+                description = "The bookmarks package to use.";
+              };
+              enableBashIntegration = mkEnableOption "Bash integration" // {
+                default = true;
+              };
+            };
+            config = mkIf cfg.enable {
+              environment.systemPackages = [ cfg.package ];
+              programs = {
+                bash.interactiveShellInit = mkIf cfg.enableBashIntegration ''
+                  g() {
+                      eval "$(${cfg.package}/bin/bookmarks go "$@")"
+                  }
+                '';
+              };
+            };
+          };
         devShells = {
           cli = pkgs.mkShell {
             # packages = builtins.attrValues self.packages.${system};
