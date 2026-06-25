@@ -154,34 +154,36 @@ fn main() {
                 serde_json::from_str(&json).expect("Could not deserialize");
             let cwd = std::env::current_dir().expect("Couldn't get cwd");
 
-            let path: PathBuf = if Path::new(&args.name).is_dir() {
-                PathBuf::from(&args.name)
-            } else {
+            let path: PathBuf = {
                 match dirs.get(&args.name) {
                     Some(thing) => thing.clone(),
                     None => {
-                        eprintln!("bookmarks: no match found, using zoxide instead");
-                        let output = std::process::Command::new("zoxide")
-                            .arg("query")
-                            .arg(&args.name)
-                            .output();
-                        match output {
-                            Err(_) => {
-                                eprintln!("bookmarks: zoxide not found.");
-                                cwd.clone()
-                            }
-                            Ok(out) => {
-                                let stderr = String::from_utf8_lossy(&out.stderr);
-                                eprint!("{}", stderr.trim());
-                                if !stderr.trim().is_empty() {
-                                    eprintln!()
+                        if Path::new(&args.name).is_dir() {
+                            PathBuf::from(&args.name)
+                        } else {
+                            eprintln!("bookmarks: no match found, using zoxide instead");
+                            let output = std::process::Command::new("zoxide")
+                                .arg("query")
+                                .arg(&args.name)
+                                .output();
+                            match output {
+                                Err(_) => {
+                                    eprintln!("bookmarks: zoxide not found.");
+                                    cwd.clone()
                                 }
-                                let mut stdout =
-                                    String::from_utf8_lossy(&out.stdout).trim().to_string();
-                                if stdout.is_empty() {
-                                    stdout = cwd.to_string_lossy().to_string();
+                                Ok(out) => {
+                                    let stderr = String::from_utf8_lossy(&out.stderr);
+                                    eprint!("{}", stderr.trim());
+                                    if !stderr.trim().is_empty() {
+                                        eprintln!()
+                                    }
+                                    let mut stdout =
+                                        String::from_utf8_lossy(&out.stdout).trim().to_string();
+                                    if stdout.is_empty() {
+                                        stdout = cwd.to_string_lossy().to_string();
+                                    }
+                                    PathBuf::from(stdout)
                                 }
-                                PathBuf::from(stdout)
                             }
                         }
                     }
