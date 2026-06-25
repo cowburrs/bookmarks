@@ -1,5 +1,8 @@
 use core::fmt;
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use clap::Parser;
 use colored::Colorize;
@@ -145,47 +148,44 @@ fn main() {
         }
         Commands::Go(args) => {
             let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
-            let home = base_dirs.home_dir();
-            if args.name == home.to_string_lossy()
-                || args.name.starts_with('/')
-                || args.name.starts_with('.')
-            {
-                println!("cd {}", args.name);
-                return;
-            }
             let home = base_dirs.home_dir().join("");
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
             let dirs: HashMap<String, PathBuf> =
                 serde_json::from_str(&json).expect("Could not deserialize");
             let cwd = std::env::current_dir().expect("Couldn't get cwd");
-            let path = match dirs.get(&args.name.to_string()) {
-                None => {
-                    eprintln!("bookmarks: no match found, using zoxide instead");
-                    let output = std::process::Command::new("zoxide")
-                        .arg("query")
-                        .arg(args.name)
-                        .output();
-                    match output {
-                        Err(_) => {
-                            eprintln!("bookmarks: zoxide not found.");
-                            &cwd
-                        }
-                        Ok(out) => {
-                            let stderr = String::from_utf8_lossy(&out.stderr);
-                            eprint!("{}", stderr.trim());
-                            if !stderr.trim().is_empty() {
-                                eprintln!()
+
+            let path: PathBuf = if Path::new(&args.name).is_dir() {
+                PathBuf::from(&args.name)
+            } else {
+                match dirs.get(&args.name) {
+                    Some(thing) => thing.clone(),
+                    None => {
+                        eprintln!("bookmarks: no match found, using zoxide instead");
+                        let output = std::process::Command::new("zoxide")
+                            .arg("query")
+                            .arg(&args.name)
+                            .output();
+                        match output {
+                            Err(_) => {
+                                eprintln!("bookmarks: zoxide not found.");
+                                cwd.clone()
                             }
-                            let mut stdout =
-                                String::from_utf8_lossy(&out.stdout).trim().to_string();
-                            if stdout.is_empty() {
-                                stdout = cwd.to_string_lossy().to_string();
+                            Ok(out) => {
+                                let stderr = String::from_utf8_lossy(&out.stderr);
+                                eprint!("{}", stderr.trim());
+                                if !stderr.trim().is_empty() {
+                                    eprintln!()
+                                }
+                                let mut stdout =
+                                    String::from_utf8_lossy(&out.stdout).trim().to_string();
+                                if stdout.is_empty() {
+                                    stdout = cwd.to_string_lossy().to_string();
+                                }
+                                PathBuf::from(stdout)
                             }
-                            &PathBuf::from(stdout)
                         }
                     }
                 }
-                Some(thing) => thing,
             };
             match path.strip_prefix("$HOME") {
                 Ok(thing) => match args.raw {
