@@ -136,6 +136,19 @@
         packages =
           let
             bm = my-crate;
+            book = pkgs.stdenv.mkDerivation {
+              name = "mdbook";
+              src = ./.;
+              nativeBuildInputs = with pkgs; [
+                mdbook
+              ];
+              installPhase = ''
+                runHook preInstall
+                mdbook build ./docs
+                cp -r ./docs/book $out
+                runHook postInstall
+              '';
+            };
           in
           {
             inherit bm;
@@ -146,8 +159,6 @@
                 pkgs.installShellFiles
                 pkgs.makeWrapper
               ];
-
-              runtimeInputs = (with pkgs; [ zoxide ]);
 
               installPhase = ''
                 runHook preInstall
@@ -165,6 +176,12 @@
 
                 mkdir -p $out/share/bash-completion
                 ln -s ${bm}/share/bash-completion/completions $out/share/bash-completion/completions
+              '';
+            };
+            book = pkgs.writeShellApplication {
+              name = "mkbook";
+              text = ''
+                xdg-open ${book}/index.html
               '';
             };
           };
