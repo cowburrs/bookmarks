@@ -55,7 +55,7 @@
             programs = {
               bash.interactiveShellInit = mkIf cfg.enableBashIntegration ''
                 g() {
-                    eval "$(${cfg.package}/bin/bookmarks go "$@")"
+                    eval "$(${cfg.package}/bin/bm go "$@")"
                 }
               '';
             };
