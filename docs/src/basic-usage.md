@@ -33,7 +33,10 @@ bookmarks: no match found, using zoxide instead
 ╰─$
 ```
 
-`~`, `.`, `..` will not be passed to zoxide. And unlike bashmarks, this command
+`~`, `.`, `..` and other sensible defaults
+will not be passed to zoxide.
+
+Unlike bashmarks also, this command
 will not cd to any directory in the cwd.
 
 ## Delete
