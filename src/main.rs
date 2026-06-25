@@ -146,16 +146,12 @@ fn main() {
         Commands::Go(args) => {
             let base_dirs = BaseDirs::new().expect("Could not find BaseDirs");
             let home = base_dirs.home_dir();
-            match args.name.as_str() {
-                x if x == home.to_string_lossy() => {
-                    println!("cd {}", args.name);
-                    return;
-                }
-                ".." | "." => {
-                    println!("cd {}", args.name);
-                    return;
-                }
-                _ => {}
+            if args.name == home.to_string_lossy()
+                || args.name.starts_with('/')
+                || args.name.starts_with('.')
+            {
+                println!("cd {}", args.name);
+                return;
             }
             let home = base_dirs.home_dir().join("");
             let json = std::fs::read_to_string(&config).unwrap_or("{}".to_string());
