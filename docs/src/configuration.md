@@ -2,14 +2,20 @@
 
 ## Nix
 
+### Yazi
+
 Optionally you can add the yazi plugin through nix. Heres my current
 configuration as a sample that might help you get started. This is my
 current configuration as of jun 25
 
 Assuming you have bookmarks defined in your inputs.
 
+The keymap.toml should also include a keybind to invoke bookmarks.yazi. see
+[quick-start](quick-start.md#adding-this-plugin-to-yazi)
+
 ```nix
   programs.yazi = {
+    settings.keymap = (lib.importTOML ../../resources/misc/yazi/keymap.toml);
     plugins = {
       bookmarks = "${inputs.bookmarks}/bookmarks.yazi";
     };

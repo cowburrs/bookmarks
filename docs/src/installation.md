@@ -1,9 +1,21 @@
 # Installation
+
 ## Prerequisites
 
-- This is strictly a linux tool, this tool is untested
-  - \*although the implemetation of the directory saving is OS agnostic
-- A shell is necessary, this is a cli tool
+#### \*Nix users can skip this step.
+
+- This is strictly a linux tool, this tool is untested for non linux operating systems.
+
+  - *\*although the implementation of the directory saving is OS agnostic*
+
+- Bookmarks utilizes Zoxide when there is no directory bookmark saved.
+
+- Bash is officially supported with bookmark.
+
+- Manpages is also available, if that is a preferred method of documentation.
+
+- Nix is HIGHLY recommended, these docs show all steps and nixos is the only officially
+  supported os, and nix is the only supported package manager.
 
 ## Nix
 
@@ -45,5 +57,5 @@ environment.systemPackages =
 See the release tab in github, all binaries are compiled using github actions.
 Meaning they're reasonably safe.
 
-[TL Note]:  Autocompletions and Man pages and dependencies are not shipped.
+\[TL Note\]: Autocompletions and Man pages and dependencies are not shipped.
 The nix download is heavily favoured over this manual approach
